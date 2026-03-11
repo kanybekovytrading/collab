@@ -26,6 +26,7 @@ public class ApplicationService {
     private final BloggerProfileRepository bloggerProfileRepository;
     private final BrandProfileRepository brandProfileRepository;
     private final NotificationService notificationService;
+    private final MinioService minioService;
 
     @Transactional
     public ApplicationDto.Response apply(UUID taskId, String coverLetter, BigDecimal proposedPrice, User blogger) {
@@ -203,7 +204,7 @@ public class ApplicationService {
         r.setBloggerName(a.getBlogger().getFullName());
         r.setStatus(a.getStatus());
         r.setProposedPrice(a.getProposedPrice());
-        r.setSubmittedWorkUrl(a.getSubmittedWorkUrl());
+        r.setSubmittedWorkUrl(minioService.resolveUrl(a.getSubmittedWorkUrl()));
         r.setInvited(a.isInvited());
         r.setCreatedAt(a.getCreatedAt());
         return r;

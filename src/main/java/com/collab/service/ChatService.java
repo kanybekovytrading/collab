@@ -20,6 +20,7 @@ public class ChatService {
     private final MessageRepository messageRepository;
     private final ApplicationRepository applicationRepository;
     private final NotificationService notificationService;
+    private final MinioService minioService;
 
     @Transactional
     public PageResponse<ChatDto.MessageResponse> getMessages(UUID appId, User user, int page, int size) {
@@ -65,9 +66,9 @@ public class ChatService {
         r.setId(m.getId());
         r.setSenderId(m.getSender().getId());
         r.setSenderName(m.getSender().getFullName());
-        r.setSenderAvatar(m.getSender().getAvatarUrl());
+        r.setSenderAvatar(minioService.resolveUrl(m.getSender().getAvatarUrl()));
         r.setContent(m.getContent());
-        r.setAttachmentUrl(m.getAttachmentUrl());
+        r.setAttachmentUrl(minioService.resolveUrl(m.getAttachmentUrl()));
         r.setAttachmentType(m.getAttachmentType());
         r.setRead(m.isRead());
         r.setSystemMessage(m.isSystemMessage());

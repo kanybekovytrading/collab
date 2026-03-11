@@ -28,9 +28,6 @@ public class MinioService {
     @Value("${minio.bucket}")
     private String bucket;
 
-    @Value("${minio.url}")
-    private String publicUrl;
-
     @PostConstruct
     public void initBucketPolicy() {
         try {
@@ -103,8 +100,7 @@ public class MinioService {
             throw new RuntimeException("File upload failed: " + e.getMessage());
         }
 
-        String url = publicUrl + "/" + bucket + "/" + objectKey;
-        log.info("Public URL: {}", url);
+        log.info("File uploaded, objectKey: {}", objectKey);
 
         MediaFile media = MediaFile.builder()
                 .uploader(uploader)
@@ -113,7 +109,7 @@ public class MinioService {
                 .originalFilename(file.getOriginalFilename())
                 .contentType(file.getContentType())
                 .sizeBytes(file.getSize())
-                .publicUrl(url)
+                .publicUrl(objectKey)   // храним objectKey, URL генерируем через presign
                 .entityType(type)
                 .entityId(entityId)
                 .build();
@@ -124,7 +120,19 @@ public class MinioService {
     }
 
     /**
-     * Генерирует временную подписанную ссылку (presigned URL) — для приватных файлов.
+     * Разрешает objectKey в presigned URL.
+     * Если значение null или пустое — возвращает null.
+     * Если значение уже является URL (начинается с http) — возвращает как есть (legacy).
+     * Иначе — генерирует presigned URL из objectKey.
+     */
+    public String resolveUrl(String value) {
+        if (value == null || value.isBlank()) return null;
+        if (value.startsWith("http")) return value; // legacy full URL
+        return getPresignedUrl(value);
+    }
+
+    /**
+     * Генерирует временную подписанную ссылку (presigned URL).
      * Ссылка действует 1 час.
      */
     public String getPresignedUrl(String objectKey) {

@@ -22,6 +22,7 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final NotificationService notificationService;
     private final UserRepository userRepository;
+    private final MinioService minioService;
 
     @Transactional
     public TaskDto.Response create(TaskDto.CreateRequest req, User brand) {
@@ -110,7 +111,7 @@ public class TaskService {
         r.setTitle(t.getTitle());
         r.setDescription(t.getDescription());
         r.setTaskType(t.getTaskType());
-        r.setCoverImageUrl(t.getCoverImageUrl());
+        r.setCoverImageUrl(minioService.resolveUrl(t.getCoverImageUrl()));
         r.setCity(t.getCity());
         r.setOnline(t.isOnline());
         r.setDeadlineDays(t.getDeadlineDays());
@@ -127,7 +128,7 @@ public class TaskService {
         TaskDto.BrandInfo b = new TaskDto.BrandInfo();
         b.setId(t.getBrand().getId());
         b.setFullName(t.getBrand().getFullName());
-        b.setAvatarUrl(t.getBrand().getAvatarUrl());
+        b.setAvatarUrl(minioService.resolveUrl(t.getBrand().getAvatarUrl()));
         b.setVerified(t.getBrand().isVerified());
         if (t.getBrand().getBrandProfile() != null) {
             b.setCompanyName(t.getBrand().getBrandProfile().getCompanyName());

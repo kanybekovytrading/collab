@@ -67,14 +67,23 @@ public class MediaController {
 
         UploadResponse resp = new UploadResponse();
         resp.setFileId(saved.getId());
-        resp.setUrl(saved.getPublicUrl());
-        resp.setObjectKey(saved.getObjectKey());
+        resp.setObjectKey(saved.getObjectKey());           // сохраняй это в профиле/задании
+        resp.setPresignedUrl(minioService.getPresignedUrl(saved.getObjectKey())); // используй для отображения (1 час)
         resp.setContentType(saved.getContentType());
         resp.setSizeBytes(saved.getSizeBytes());
 
         return ResponseEntity.ok(ApiResponse1.ok("Uploaded successfully", resp));
     }
 
+
+    @GetMapping("/presigned")
+    @Operation(
+        summary = "Получить свежую ссылку на файл",
+        description = "Генерирует presigned URL для доступа к файлу в приватном бакете. Ссылка действует **1 час**."
+    )
+    public ResponseEntity<ApiResponse1<String>> presigned(@RequestParam String objectKey) {
+        return ResponseEntity.ok(ApiResponse1.ok(minioService.getPresignedUrl(objectKey)));
+    }
 
     private void validateFile(MultipartFile file, MediaFileType type) {
         if (file.isEmpty()) throw new IllegalArgumentException("File is empty");
@@ -93,8 +102,8 @@ public class MediaController {
     @Data
     static class UploadResponse {
         private UUID fileId;
-        private String url;
-        private String objectKey;
+        private String objectKey;      // сохраняй в профиль/задание
+        private String presignedUrl;   // используй для отображения (истекает через 1 час)
         private String contentType;
         private Long sizeBytes;
     }

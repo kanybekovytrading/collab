@@ -24,6 +24,7 @@ public class ReviewService {
     private final BloggerProfileRepository bloggerProfileRepository;
     private final BrandProfileRepository brandProfileRepository;
     private final NotificationService notificationService;
+    private final MinioService minioService;
 
     @Transactional
     public ReviewDto.Response create(ReviewDto.CreateRequest req, User reviewer) {
@@ -127,7 +128,7 @@ public class ReviewService {
         dto.setId(r.getId());
         dto.setReviewerId(r.getReviewer().getId());
         dto.setReviewerName(r.getReviewer().getFullName());
-        dto.setReviewerAvatar(r.getReviewer().getAvatarUrl());
+        dto.setReviewerAvatar(minioService.resolveUrl(r.getReviewer().getAvatarUrl()));
         dto.setRating(r.getRating());
         dto.setComment(r.getComment());
         dto.setTaskTitle(r.getTaskTitle());

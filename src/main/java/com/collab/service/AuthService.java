@@ -23,6 +23,7 @@ public class AuthService {
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
     private final SocialOAuthService socialOAuthService;
+    private final MinioService minioService;
 
     @Transactional
     public AuthDto.AuthResponse register(AuthDto.RegisterRequest req) {
@@ -172,7 +173,7 @@ public class AuthService {
         info.setEmail(user.getEmail());
         info.setPhone(user.getPhone());
         info.setCurrentRole(user.getCurrentRole().name());
-        info.setAvatarUrl(user.getAvatarUrl());
+        info.setAvatarUrl(minioService.resolveUrl(user.getAvatarUrl()));
         info.setVerified(user.isVerified());
 
         AuthDto.AuthResponse resp = new AuthDto.AuthResponse();

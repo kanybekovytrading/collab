@@ -26,6 +26,7 @@ public class ProfileService {
     private final UserRepository userRepository;
     private final SocialStatsService socialStatsService;
     private final PortfolioItemRepository portfolioItemRepository;
+    private final MinioService minioService;
 
     private static final int MAX_PORTFOLIO_ITEMS = 15;
 
@@ -176,10 +177,10 @@ public class ProfileService {
     private ProfileDto.PortfolioItemResponse toPortfolioResponse(PortfolioItem item) {
         ProfileDto.PortfolioItemResponse r = new ProfileDto.PortfolioItemResponse();
         r.setId(item.getId());
-        r.setMediaUrl(item.getMediaUrl());
+        r.setMediaUrl(minioService.resolveUrl(item.getMediaUrl()));
         r.setTitle(item.getTitle());
         r.setContentType(item.getContentType());
-        r.setThumbnailUrl(item.getThumbnailUrl());
+        r.setThumbnailUrl(minioService.resolveUrl(item.getThumbnailUrl()));
         r.setSortOrder(item.getSortOrder());
         return r;
     }
@@ -235,7 +236,7 @@ public class ProfileService {
         ProfileDto.BloggerResponse r = new ProfileDto.BloggerResponse();
         r.setId(p.getUser().getId());
         r.setFullName(p.getUser().getFullName());
-        r.setAvatarUrl(p.getUser().getAvatarUrl());
+        r.setAvatarUrl(minioService.resolveUrl(p.getUser().getAvatarUrl()));
         r.setCity(p.getUser().getCity());
         r.setCountry(p.getUser().getCountry());
         r.setAge(p.getUser().getAge());
@@ -260,7 +261,7 @@ public class ProfileService {
         r.setId(p.getUser().getId());
         r.setFullName(p.getUser().getFullName());
         r.setCompanyName(p.getCompanyName());
-        r.setAvatarUrl(p.getUser().getAvatarUrl());
+        r.setAvatarUrl(minioService.resolveUrl(p.getUser().getAvatarUrl()));
         r.setCity(p.getUser().getCity());
         r.setVerified(p.getUser().isVerified());
         r.setDescription(p.getDescription());
