@@ -2,8 +2,10 @@ package com.collab.dto;
 
 import com.collab.common.enums.ContentCategory;
 import com.collab.common.enums.TaskType;
+import com.collab.common.enums.UserRole;
 import com.collab.entity.SocialAccount;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
@@ -110,5 +112,22 @@ public class ProfileDto {
     public static class ReorderRequest {
         /** Список ID в нужном порядке — индекс = новый sortOrder */
         private List<UUID> orderedIds;
+    }
+
+    @Data
+    public static class AddRoleRequest {
+        @NotNull private UserRole role;
+    }
+
+    @Data
+    public static class SwitchRoleRequest {
+        @NotNull
+        private UserRole role;
+    }
+
+    @Data
+    public static class RolesResponse {
+        private String currentRole;
+        private java.util.Set<String> allRoles;
     }
 }

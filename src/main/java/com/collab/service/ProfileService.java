@@ -83,6 +83,45 @@ public class ProfileService {
         return toBrandResponse(saved);
     }
 
+    // ─── Roles ───────────────────────────────────────────────────────────────
+
+    @Transactional
+    public ProfileDto.RolesResponse addRole(UserRole newRole, User user) {
+        if (user.getCurrentRole() == UserRole.BRAND)
+            throw new IllegalArgumentException("Бренды не могут добавлять роли блогера");
+        if (newRole == UserRole.BRAND || newRole == UserRole.ADMIN)
+            throw new IllegalArgumentException("Нельзя добавить роль: " + newRole);
+        if (user.getRoles().contains(newRole))
+            throw new IllegalArgumentException("Роль " + newRole + " уже добавлена");
+
+        user.getRoles().add(newRole);
+        userRepository.save(user);
+
+        return buildRolesResponse(user);
+    }
+
+    @Transactional
+    public ProfileDto.RolesResponse switchRole(UserRole role, User user) {
+        if (!user.getRoles().contains(role))
+            throw new IllegalArgumentException("У вас нет роли " + role + ". Сначала добавьте её.");
+        if (user.getCurrentRole() == role)
+            throw new IllegalArgumentException("Роль " + role + " уже активна");
+
+        user.setCurrentRole(role);
+        userRepository.save(user);
+
+        return buildRolesResponse(user);
+    }
+
+    private ProfileDto.RolesResponse buildRolesResponse(User user) {
+        ProfileDto.RolesResponse r = new ProfileDto.RolesResponse();
+        r.setCurrentRole(user.getCurrentRole().name());
+        r.setAllRoles(user.getRoles().stream()
+                .map(UserRole::name)
+                .collect(java.util.stream.Collectors.toSet()));
+        return r;
+    }
+
     // ─── Portfolio ────────────────────────────────────────────────────────────
 
     @Transactional(readOnly = true)

@@ -127,6 +127,51 @@ public class ProfileController {
         return ResponseEntity.ok(ApiResponse1.ok(profileService.updateBrand(req, user)));
     }
 
+    // ─── Roles ───────────────────────────────────────────────────────────────
+
+    @PostMapping("/profile/role")
+    @PreAuthorize("hasAnyRole('BLOGGER','AI_CREATOR')")
+    @SecurityRequirement(name = "Bearer")
+    @Tag(name = "Profile")
+    @Operation(
+        summary = "Добавить роль",
+        description = """
+            Позволяет блогеру / AI-креатору добавить себе вторую роль.
+
+            **Разрешено:**
+            - `BLOGGER` → добавить `AI_CREATOR`
+            - `AI_CREATOR` → добавить `BLOGGER`
+
+            **Запрещено:** добавлять `BRAND` или `ADMIN`.
+
+            После добавления роли переключитесь на неё через `PUT /profile/role/switch`.
+            """
+    )
+    public ResponseEntity<ApiResponse1<ProfileDto.RolesResponse>> addRole(
+            @Valid @RequestBody ProfileDto.AddRoleRequest req,
+            @CurrentUser User user) {
+        return ResponseEntity.ok(ApiResponse1.ok(profileService.addRole(req.getRole(), user)));
+    }
+
+    @PutMapping("/profile/role/switch")
+    @PreAuthorize("hasAnyRole('BLOGGER','AI_CREATOR')")
+    @SecurityRequirement(name = "Bearer")
+    @Tag(name = "Profile")
+    @Operation(
+        summary = "Переключить активную роль",
+        description = """
+            Меняет `currentRole` пользователя на одну из уже добавленных ролей.
+            Роль должна быть предварительно добавлена через `POST /profile/role`.
+
+            После переключения токен обновлять не нужно — роль читается из БД при каждом запросе.
+            """
+    )
+    public ResponseEntity<ApiResponse1<ProfileDto.RolesResponse>> switchRole(
+            @Valid @RequestBody ProfileDto.SwitchRoleRequest req,
+            @CurrentUser User user) {
+        return ResponseEntity.ok(ApiResponse1.ok(profileService.switchRole(req.getRole(), user)));
+    }
+
     // ─── Portfolio ────────────────────────────────────────────────────────────
 
     @GetMapping("/bloggers/{userId}/portfolio")
