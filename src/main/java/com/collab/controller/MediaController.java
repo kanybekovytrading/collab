@@ -75,20 +75,6 @@ public class MediaController {
         return ResponseEntity.ok(ApiResponse1.ok("Uploaded successfully", resp));
     }
 
-    @GetMapping("/presigned")
-    @Operation(
-        summary = "Получить временную ссылку на файл",
-        description = """
-            Генерирует presigned URL для доступа к приватному файлу.  
-            Ссылка действует **1 час**.  
-            Используйте для файлов типа `WORK_SUBMISSION` (сданные работы).
-            """
-    )
-    public ResponseEntity<ApiResponse1<String>> presigned(
-            @Parameter(description = "Ключ объекта в MinIO (из поля objectKey при загрузке)")
-            @RequestParam String objectKey) {
-        return ResponseEntity.ok(ApiResponse1.ok(minioService.getPresignedUrl(objectKey)));
-    }
 
     private void validateFile(MultipartFile file, MediaFileType type) {
         if (file.isEmpty()) throw new IllegalArgumentException("File is empty");

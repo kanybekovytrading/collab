@@ -6,6 +6,7 @@ import com.collab.entity.User;
 import com.collab.repository.MediaFileRepository;
 import io.minio.*;
 import io.minio.http.Method;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,6 +30,32 @@ public class MinioService {
 
     @Value("${minio.url}")
     private String publicUrl;
+
+    @PostConstruct
+    public void initBucketPolicy() {
+        try {
+            boolean exists = minioClient.bucketExists(BucketExistsArgs.builder().bucket(bucket).build());
+            if (!exists) {
+                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucket).build());
+            }
+            String policy = """
+            {
+              "Version": "2012-10-17",
+              "Statement": [{
+                "Effect": "Allow",
+                "Principal": {"AWS": ["*"]},
+                "Action": ["s3:GetObject"],
+                "Resource": ["arn:aws:s3:::%s/*"]
+              }]
+            }
+            """.formatted(bucket);
+            minioClient.setBucketPolicy(SetBucketPolicyArgs.builder()
+                    .bucket(bucket).config(policy).build());
+            log.info("Bucket policy set to public");
+        } catch (Exception e) {
+            log.error("Failed to set bucket policy: {}", e.getMessage());
+        }
+    }
 
     /**
      * Загружает файл в MinIO и сохраняет метаданные в БД.
