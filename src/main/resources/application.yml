@@ -15,8 +15,6 @@ spring:
 server:
   port: 8080
   address: 0.0.0.0
-firebase:
-    credentials-path: classpath:firebase-service-account.json
 jwt:
   secret: collab-super-secret-key-256-bits-long-for-security
   expiration: 86400000

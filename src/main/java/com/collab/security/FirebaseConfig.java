@@ -9,23 +9,29 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 
 import jakarta.annotation.PostConstruct;
+
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 @Configuration
 @Slf4j
 public class FirebaseConfig {
 
-    @Value("${firebase.credentials-path}")
-    private Resource credentialsResource;
-
     @PostConstruct
     public void initialize() {
         try {
             if (FirebaseApp.getApps().isEmpty()) {
+                String json = System.getenv("FIREBASE_CREDENTIALS_JSON");
+
+                GoogleCredentials credentials = GoogleCredentials.fromStream(
+                        new ByteArrayInputStream(json.getBytes(StandardCharsets.UTF_8))
+                );
+
                 FirebaseOptions options = FirebaseOptions.builder()
-                        .setCredentials(GoogleCredentials.fromStream(
-                                credentialsResource.getInputStream()))
+                        .setCredentials(credentials)
                         .build();
+
                 FirebaseApp.initializeApp(options);
                 log.info("Firebase initialized successfully");
             }
