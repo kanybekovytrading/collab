@@ -24,7 +24,7 @@ public class Review extends BaseEntity {
     @Column(nullable = false)
     private Integer rating; // 1-5
 
-    @Column(length = 1000)
+    @Column(columnDefinition = "TEXT")
     private String comment;
 
     @Column(name = "task_title")

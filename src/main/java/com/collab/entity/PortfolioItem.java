@@ -15,14 +15,14 @@ public class PortfolioItem extends BaseEntity {
 
     private String title;
 
-    @Column(name = "media_url", nullable = false)
+    @Column(name = "media_url", nullable = false, columnDefinition = "TEXT")
     private String mediaUrl;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "content_type")
     private TaskType contentType;
 
-    @Column(name = "thumbnail_url")
+    @Column(name = "thumbnail_url", columnDefinition = "TEXT")
     private String thumbnailUrl;
 
     @Column(name = "sort_order")
