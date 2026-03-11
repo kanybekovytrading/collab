@@ -1,0 +1,73 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/coursedb
+    username: postgres
+    password: 1111
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: false
+server:
+  port: 8080
+  address: 0.0.0.0
+firebase:
+    credentials-path: classpath:firebase-service-account.json
+jwt:
+  secret: collab-super-secret-key-256-bits-long-for-security
+  expiration: 86400000
+  refresh-expiration: 604800000
+
+minio:
+  url: https://fra1.digitaloceanspaces.com
+  access-key: DO004G42KTU6VL83JA4Z
+  secret-key: BajPpPGRgaLB9o1qD7+vZUg0pcBID/GGaiTqqTNCMB4
+  bucket: resume-media
+
+app:
+  frontend-url: http://localhost:3000
+  email:
+    from: noreply@collab.app
+    from-name: Collab Platform
+  admin:
+    email: admin@collab.app
+    password: Admin1234!
+    full-name: Admin
+  social:
+    sync-interval: 86400000       # синхронизация каждые 24ч (мс)
+    sync-initial-delay: 60000     # первый запуск через 1 мин после старта (мс)
+    youtube:
+      api-key: AIzaSyBIrkDfaIiZSggRi_loJ5YvoaX3QNm6Bhs
+    vk:
+      service-token: YOUR_VK_SERVICE_TOKEN
+    telegram:
+      bot-token: YOUR_TELEGRAM_BOT_TOKEN
+    ok:
+      application-key: YOUR_OK_APPLICATION_KEY
+      secret-key: YOUR_OK_SECRET_KEY
+      access-token: YOUR_OK_ACCESS_TOKEN
+    # OAuth платформы (токены per-user хранятся в SocialAccount.accessToken)
+    instagram:
+      client-id: YOUR_INSTAGRAM_CLIENT_ID
+      client-secret: YOUR_INSTAGRAM_CLIENT_SECRET
+    tiktok:
+      client-key: YOUR_TIKTOK_CLIENT_KEY
+      client-secret: YOUR_TIKTOK_CLIENT_SECRET
+    threads:
+      client-id: YOUR_THREADS_CLIENT_ID
+      client-secret: YOUR_THREADS_CLIENT_SECRET
+  backend-url: http://localhost:8080
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+    display-request-duration: true
+    try-it-out-enabled: true
