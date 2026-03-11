@@ -127,7 +127,18 @@ public class MinioService {
      */
     public String resolveUrl(String value) {
         if (value == null || value.isBlank()) return null;
-        if (value.startsWith("http")) return value; // legacy full URL
+        if (value.startsWith("http")) {
+            // Legacy full URL pointing to our bucket — extract objectKey and generate presigned URL
+            String marker = "/" + bucket + "/";
+            int idx = value.indexOf(marker);
+            if (idx >= 0) {
+                String objectKey = value.substring(idx + marker.length());
+                int qIdx = objectKey.indexOf('?');
+                if (qIdx >= 0) objectKey = objectKey.substring(0, qIdx);
+                return getPresignedUrl(objectKey);
+            }
+            return value; // truly external URL, return as-is
+        }
         return getPresignedUrl(value);
     }
 
