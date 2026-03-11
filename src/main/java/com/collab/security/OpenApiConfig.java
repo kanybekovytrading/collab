@@ -47,7 +47,7 @@ public class OpenApiConfig {
                                 .email("dev@collab.app"))
                         .license(new License().name("Private")))
                 .servers(List.of(
-                        new Server().url("http://10.117.6.120:8080").description("Local")))
+                        new Server().url("https://collab-production-3581.up.railway.app").description("dev")))
                                 .addSecurityItem(new SecurityRequirement().addList("Bearer"))
                 .components(new Components()
                         .addSecuritySchemes("Bearer", new SecurityScheme()
