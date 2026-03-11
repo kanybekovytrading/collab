@@ -21,10 +21,11 @@ jwt:
   refresh-expiration: 604800000
 
 minio:
-  url: https://fra1.digitaloceanspaces.com
-  access-key: DO004G42KTU6VL83JA4Z
-  secret-key: BajPpPGRgaLB9o1qD7+vZUg0pcBID/GGaiTqqTNCMB4
-  bucket: resume-media
+  url: ${AWS_ENDPOINT_URL}
+  access-key: ${AWS_ACCESS_KEY_ID}
+  secret-key: ${AWS_SECRET_ACCESS_KEY}
+  bucket: ${AWS_S3_BUCKET_NAME}
+  region: ${AWS_DEFAULT_REGION}
 
 app:
   frontend-url: http://localhost:3000

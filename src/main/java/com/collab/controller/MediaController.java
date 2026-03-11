@@ -101,12 +101,7 @@ public class MediaController {
             throw new IllegalArgumentException("File too large. Max: " + (maxSize / 1024 / 1024) + "MB");
         String ct = file.getContentType();
         if (ct == null) throw new IllegalArgumentException("Unknown file type");
-        boolean valid = switch (type) {
-            case USER_AVATAR, TASK_COVER, BRAND_LOGO -> ct.startsWith("image/");
-            case PORTFOLIO, WORK_SUBMISSION -> ct.startsWith("image/") || ct.startsWith("video/");
-            case CHAT_ATTACHMENT -> ct.startsWith("image/") || ct.startsWith("video/") || ct.equals("application/pdf");
-        };
-        if (!valid) throw new IllegalArgumentException("File type not allowed for " + type);
+
     }
 
     @Data

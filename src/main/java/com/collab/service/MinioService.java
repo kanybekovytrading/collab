@@ -45,20 +45,39 @@ public class MinioService {
         String ext = getExtension(file.getOriginalFilename());
         String objectKey = buildKey(type, entityId, ext);
 
-        try {
-            ensureBucketExists();
+        log.info("=== Starting file upload ===");
+        log.info("Original filename: {}", file.getOriginalFilename());
+        log.info("Content type: {}", file.getContentType());
+        log.info("File size: {} bytes", file.getSize());
+        log.info("Object key: {}", objectKey);
+        log.info("Bucket: {}", bucket);
 
+        try {
+            log.info("Checking bucket existence...");
+            ensureBucketExists();
+            log.info("Bucket check passed");
+
+            log.info("Uploading to MinIO...");
             minioClient.putObject(PutObjectArgs.builder()
                     .bucket(bucket)
                     .object(objectKey)
                     .stream(file.getInputStream(), file.getSize(), -1)
                     .contentType(file.getContentType())
                     .build());
+            log.info("Upload to MinIO successful: {}", objectKey);
 
         } catch (Exception e) {
-            log.error("Failed to upload file to MinIO: {}", e.getMessage(), e);
+            log.error("=== Upload FAILED ===");
+            log.error("Bucket: {}", bucket);
+            log.error("Object key: {}", objectKey);
+            log.error("Exception type: {}", e.getClass().getName());
+            log.error("Message: {}", e.getMessage());
+            log.error("Full stacktrace:", e);
             throw new RuntimeException("File upload failed: " + e.getMessage());
         }
+
+        String url = publicUrl + "/" + bucket + "/" + objectKey;
+        log.info("Public URL: {}", url);
 
         MediaFile media = MediaFile.builder()
                 .uploader(uploader)
@@ -67,12 +86,14 @@ public class MinioService {
                 .originalFilename(file.getOriginalFilename())
                 .contentType(file.getContentType())
                 .sizeBytes(file.getSize())
-                .publicUrl(publicUrl + "/" + bucket + "/" + objectKey)
+                .publicUrl(url)
                 .entityType(type)
                 .entityId(entityId)
                 .build();
 
-        return mediaFileRepository.save(media);
+        MediaFile saved = mediaFileRepository.save(media);
+        log.info("MediaFile saved to DB with id: {}", saved.getId());
+        return saved;
     }
 
     /**
